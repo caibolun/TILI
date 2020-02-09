@@ -3,23 +3,52 @@
 '''
 @Author: ArlenCai
 @Date: 2020-02-04 17:53:40
-@LastEditTime : 2020-02-05 01:02:27
+@LastEditTime : 2020-02-09 21:50:25
 '''
+from labels import classname
+import numpy as np
 import torch
-from tili import ops
+import cv2
+import tili
+from tili import transforms
+from tili.pipeline import ImagePipline
+from torchvision.models import mobilenet_v2
+
 if __name__ == "__main__":
-    ops.Compose([
-        ops.ImageDecoder(),
-        transforms.RandomResizedCrop(args.size),
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-    ]),
-    ops.FileReader('./data')
-    reader = FileReader('./data')
-    files = reader()
-    decode = ImageDecoder()
-    resize = Resize(128)
-    img = decode(files[0])
-    img = resize(img)
-    print(img.shape)
+    # model forward
+    trans = transforms.Compose([
+        transforms.ResizedCrop((224, 224)),
+        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+    ])
+    model = mobilenet_v2(pretrained=True)
+    model.eval()
+    if torch.cuda.is_available():
+        model = model.cuda()
+    pipe = ImagePipline(trans)
+    img = pipe('cat.jpg')
+    print(type(img), img.device, img.shape)
+    with torch.no_grad():
+        y = model(img)
+    print("Predict:", classname[y.argmax().item()])
+
+    # other transforms
+    trans = transforms.Compose([
+        transforms.Resize((448, 448)),
+        transforms.ResizedCrop((256, 256)),
+        transforms.CenterCrop(224),
+        transforms.Pad((16, 16, 16, 16), padding_mode='reflect'),
+        transforms.HorizontalFlip(),
+        transforms.VerticalFlip(),
+        transforms.CvtColor('RGB2BGR'),
+    ])
+    pipe = ImagePipline(trans)
+    img = pipe('cat.jpg')
+    npimg = img.squeeze_(0).data.numpy()
+    npimg = np.transpose(npimg, (1, 2, 0))
+    cv2.imshow('img', np.uint8(npimg*255))
+    cv2.waitKey()
+
+
+    
+    
+    

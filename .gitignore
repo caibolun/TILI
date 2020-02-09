@@ -114,3 +114,4 @@ data
 *.log.json
 
 .DS_Store
+imagenet_1k/
