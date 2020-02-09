@@ -1,7 +1,7 @@
 <!--
  * @Author: ArlenCai
  * @Date: 2020-02-05 10:46:02
- * @LastEditTime : 2020-02-09 23:31:53
+ * @LastEditTime : 2020-02-09 23:32:49
  -->
 # TILI: Turbo Image Loading Library
 ## Introduction
@@ -13,6 +13,14 @@ Turbo Image Loading Library (TILI) is a collection of highly optimized library f
 
 ## Benchmark
 The benchmark run on 1K ImageNet test samples ([imagenet_1k.zip](https://download.pytorch.org/tutorial/hymenoptera_data.zip)) by Tesla P4 GPU with the simplest transforms (ImageDecoder, Resize, Normalize).
+Topk | Clean Acc. | Avg. Tabs in Clean | Avg. Tabs in Dirty | Avg. Tabs in Total
+---|---|---|---|---|---|
+1 | 89.47% | 1 | 6.86 | 3.92
+2 | 92.59% | 1.51 | 6.86 | 4.17
+3 | 93.94% | 2.01 | 6.86 | 4.41
+4 | 94.59% | 2.48 | 6.86 | 4.64
+5 | 95.07% | 2.89 | 6.86 | 3.92
+
 | Image Size | 256x256 | 512x512 |
 |-----|-----|-----|
 torchvision (baseline) | 9.7818 ms/p | 12.5466 ms/p |
