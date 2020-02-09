@@ -3,7 +3,7 @@
 '''
 @Author: ArlenCai
 @Date: 2020-02-04 14:33:22
-@LastEditTime : 2020-02-09 21:28:14
+@LastEditTime : 2020-02-09 23:44:08
 '''
 import sys
 import os
@@ -51,7 +51,12 @@ class ImageDecoder(object):
 
     def __call__(self, filepath):
         if accimage is not None:
-            sample = accimage.Image(filepath)
+            try:
+                sample = accimage.Image(filepath)
+            except IOError:
+                with open(filepath, 'rb') as f:
+                    sample = Image.open(f)
+                    sample = sample.convert('RGB')
         else:
             with open(filepath, 'rb') as f:
                 sample = Image.open(f)
