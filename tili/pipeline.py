@@ -3,7 +3,7 @@
 '''
 @Author: ArlenCai
 @Date: 2020-02-04 14:33:22
-@LastEditTime : 2020-02-09 12:19:47
+@LastEditTime : 2020-02-09 22:58:09
 '''
 import os
 import torch
@@ -116,8 +116,8 @@ class Pipline(object):
 
 
 class ImagePipline(Pipline):
-    def __init__(self, transform=None, size=None, batch_size=1, num_workers=1, keep_ratio=True, max_size=0, use_tensor=True):
-        compose = [transforms.ImageDecoder(max_size, use_tensor)]
+    def __init__(self, transform=None, size=None, batch_size=1, num_workers=1, keep_ratio=True, max_size=0, cuda_resize=True):
+        compose = [transforms.ImageDecoder(max_size, cuda_resize)]
         if size is not None:
             if keep_ratio:
                 compose.append(transforms.ResizedCrop(size))
