@@ -3,8 +3,9 @@
 '''
 @Author: ArlenCai
 @Date: 2020-02-04 14:33:22
-@LastEditTime : 2020-02-09 23:44:08
+@LastEditTime : 2020-02-11 17:07:29
 '''
+import io
 import sys
 import os
 import collections
@@ -49,18 +50,33 @@ class ImageDecoder(object):
         self.max_size = max_size**2
         self.use_tensor = use_tensor
 
-    def __call__(self, filepath):
-        if accimage is not None:
-            try:
-                sample = accimage.Image(filepath)
-            except IOError:
-                with open(filepath, 'rb') as f:
+    def __call__(self, f):
+        if isinstance(f, str):
+            if accimage is not None:
+                try:
+                    with open(f, 'rb') as fp:
+                        buf = np.frombuffer(fp.read(), np.uint8)
+                        sample = accimage.Image(buf)
+                except IOError:
+                    with open(f, 'rb') as fp:
+                        sample = Image.open(fp)
+                        sample = sample.convert('RGB')
+            else:
+                with open(f, 'rb') as fp:
+                    sample = Image.open(fp)
+                    sample = sample.convert('RGB')
+        elif isinstance(f, io.IOBase):
+            if accimage is not None:
+                try:
+                    buf = np.frombuffer(f.read(), np.uint8)
+                    sample = accimage.Image(buf)
+                except IOError:
                     sample = Image.open(f)
                     sample = sample.convert('RGB')
-        else:
-            with open(filepath, 'rb') as f:
+            else:
                 sample = Image.open(f)
                 sample = sample.convert('RGB')
+
         if self.use_tensor:
             if self.max_size !=0 and sample.width * sample.height > self.max_size:
                 ratio = math.sqrt(self.max_size/(sample.width * sample.height))

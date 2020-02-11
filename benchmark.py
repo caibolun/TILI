@@ -3,7 +3,7 @@
 '''
 @Author: ArlenCai
 @Date: 2020-02-04 17:53:40
-@LastEditTime : 2020-02-09 23:26:33
+@LastEditTime : 2020-02-11 16:54:35
 '''
 import multiprocessing as mp
 import time
@@ -44,7 +44,8 @@ if __name__ == "__main__":
     dataloader = data.DataLoader(dataset, batch_size=8, num_workers=1)
     start_time = time.time()
     for batch_idx, sample in enumerate(dataloader):
-        sample = sample.cuda()
+        if torch.cuda.is_available():
+            sample = sample.cuda()
     elapsed_time = time.time() - start_time
     print("[Torch] Batch Used Time: %f s"%elapsed_time)
     start_time = time.time()
@@ -52,7 +53,8 @@ if __name__ == "__main__":
         sample = pil_loader(x)
         sample = torch_trans(sample)
         sample.unsqueeze_(0)
-        sample = sample.cuda()
+        if torch.cuda.is_available():
+            sample = sample.cuda()
     elapsed_time = time.time() - start_time
     print("[Torch] Image Used Time: %f s"%elapsed_time)
     print(type(sample), sample.device, sample.shape)
